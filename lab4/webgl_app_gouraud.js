@@ -36,7 +36,7 @@ const shaders = {
             
             // TODO implement specular component of Phong lighting here.  You'll need dot, max, and pow
             vec3 dirToCamera = normalize(u_cameraWorldPosition - vertWorldPosition.xyz);
-            vec3 reflectNormal = reflect(dirToLight, worldNormal);
+            vec3 reflectNormal = reflect(-dirToLight, worldNormal);
             float specular = dot(reflectNormal, dirToCamera);
             float shininess = 1.0;
             specular = pow(max(specular, 0.0), shininess);

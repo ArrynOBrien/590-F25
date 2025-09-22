@@ -21,6 +21,7 @@ const shaders = {
 
         out vec3 fragWorldPosition;
         out vec2 fragUV;
+        out vec3 worldNormal;
     
         void main() {
             vec4 vertWorldPosition=u_modelMatrix*vec4(vertPosition,1);
@@ -31,7 +32,7 @@ const shaders = {
             mat4 inverseModel = inverse(u_modelMatrix);
             mat4 modelInverseTranspose = transpose(inverseModel);
             vec4 worldNormal4 = modelInverseTranspose * vec4(vertNormal,0);
-            vec3 worldNormal = normalize(worldNormal4.xyz);
+            worldNormal = normalize(worldNormal4.xyz);
 
             gl_Position = u_projectionMatrix* u_viewMatrix * vertWorldPosition;
         }`,
@@ -45,13 +46,26 @@ const shaders = {
         uniform vec3 u_cameraWorldPosition;
 
         in vec3 fragWorldPosition;
-        out vec4 outColor;
+        in vec3 worldNormal;
         in vec2 fragUV;
+        out vec4 outColor;
         uniform sampler2D u_texture;
     
         void main() {
             vec4 texColor = texture(u_texture, fragUV);
             vec3 fragColor = texColor.rgb;
+
+            vec3 dirToLight = normalize(u_lightWorldPosition - fragWorldPosition);
+            float diffuse = dot(worldNormal, dirToLight);
+            diffuse = max(diffuse, 0.0);
+
+            vec3 dirToCamera = normalize(u_cameraWorldPosition - fragWorldPosition);
+            vec3 reflectNormal = reflect(-dirToLight, worldNormal);
+            float specular = dot(reflectNormal, dirToCamera);
+            float shininess = 1.0;
+            specular = pow(max(specular, 0.0), shininess);
+
+            fragColor = fragColor + u_lightAmbient * u_matAmbient + (u_lightDiffuse * u_matDiffuse) * diffuse + (u_lightSpecular * u_matSpecular) * specular;
 
             // TODO implement diffuse and specular component of Phong lighting here.
             // I already provided the in parameter fragWorldPosition, which is the world-space position of the fragment, 
