@@ -44,10 +44,15 @@ const shaders = {
         out vec4 outColor;
     
         void main() {
+
+            
+
             vec3 fragColor = u_lightAmbient * u_matAmbient;
+
             // TODO implement diffuse and specular component of Phong lighting here.
             // I already provided the in parameter fragWorldPosition, which is the world-space position of the fragment, 
             //   but you'll need another "in" parameter (which you'll need to pass from the vertex shader using "out") 
+
             outColor = vec4(fragColor, 1);
         }`
 };

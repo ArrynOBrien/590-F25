@@ -33,11 +33,14 @@ const shaders = {
             float diffuse = dot(worldNormal, dirToLight);
             diffuse = max(diffuse, 0.0);
 
-            float specular = 
-
-            vec3 dirToCamera = normalize(u_cameraWorldPosition - vertWorldPosition.xyz);
             
-            // TODO implement specular component of Phong lighting here.  You'll need dot, max, and pow functions
+            // TODO implement specular component of Phong lighting here.  You'll need dot, max, and pow
+            vec3 dirToCamera = normalize(u_cameraWorldPosition - vertWorldPosition.xyz);
+            vec3 reflectNormal = reflect(dirToLight, worldNormal);
+            float specular = dot(reflectNormal, dirToCamera);
+            float shininess = 1.0;
+            specular = pow(max(specular, 0.0), shininess);
+
             fragColor = (u_matAmbient * u_lightAmbient) + (u_matDiffuse * u_lightDiffuse) * diffuse + (u_matSpecular * u_lightSpecular) * specular;
             // TODO don't forget to add the specular component to fragColor!
 
